@@ -1,0 +1,39 @@
+{
+    "name": "feedme",
+    "version": "0.0.1",
+    "description": "A CouchApp for recipes",
+    "load": "lib/app",
+    "modules": "lib",
+    "attachments": "static",
+    "dust": {
+        "templates": "templates"
+    },
+    "duality": {
+        "base_template": "base.html"
+    },
+    "git_info" : {
+        "skip_uncommitted" : true
+    },
+    "less" : {
+	"compress": true,
+	"compile": ["static/css/main.less"],
+	"remove_from_attachments": true
+    },
+    "dependencies": {
+        "modules": null,
+        "properties": null,
+        "attachments": null,
+        "settings": null,
+        "duality": null,
+        "dust": null,
+        "duality-dust": null,
+        "couchtypes": null,
+        "less-precompiler": null,
+    	"bootstrap": null,
+        "users": null,
+    	"session": null,
+        "kanso-topbar": null,
+    	"git-info": null,
+	"datelib": null
+    }
+}

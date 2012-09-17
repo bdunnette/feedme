@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{title}</title> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="Free Geek Twin Cities">
+    <script src="{baseURL}/static/js/json2.js"></script>
+    <script src="{baseURL}/static/js/jquery-1.7.2.min.js"></script>
+            
+    <!-- Le styles -->
+    <link rel="stylesheet" type="text/css" href="{baseURL}/static/css/main.css" />
+    <link rel="stylesheet" type="text/css" href="{baseURL}/kanso-topbar/topbar.css" />
+    <link rel="stylesheet" type="text/css" href="{baseURL}/static/css/datepicker.css" />
+    <link rel="stylesheet" type="text/css" href="{baseURL}/static/css/DT_bootstrap.css" />
+  </head>
+
+  <body>
+    <div id="kanso-topbar">
+        <div class="appname">FrontDesk</div>
+        <ul>
+            <li><a href="{baseURL}/transactions">Transactions</a></li>
+            <li><a href="{baseURL}/timesheets">Timesheets</a></li>
+            <li><a href="{baseURL}/user/add">New Volunteer</a></li>
+            <li><a href="{baseURL}/reports">Reports</a></li>
+        </ul>
+    </div>
+
+    <div class="container">
+
+    <div id="content">
+      {content|s}
+    </div>
+
+    </div> <!-- /container -->
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="{baseURL}/modules.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-typeahead.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-transition.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-alert.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-modal.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-dropdown.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-scrollspy.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-tab.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-tooltip.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-popover.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-button.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-collapse.js"></script>
+    <script src="{baseURL}/bootstrap/js/bootstrap-carousel.js"></script>
+    <script>
+        $(document).ready(function(){
+           require('kanso-topbar').init();
+           $('#kanso-topbar').addClass('noprint');
+        });
+    </script>
+
+  </body>
+</html>
