@@ -70,13 +70,42 @@ def fetch_recipes(db, api_url):
             db.save(recipe_doc)
     except Exception:
         print sys.exc_info()
+        
+def fetch_images(db, api_url):
+    try:
+        images = db.view('feedme/images')
+        for recipe in images:
+            image_list = recipe.key
+            image_files = recipe.value
+            if image_files == None: 
+                image_files = []
+            if image_list and (len(image_list) != len(image_files)):
+                print recipe
+                recipe_doc = db.get(recipe.id)
+                for image in image_list:
+                    image_query = '%s?format=json&action=query&prop=imageinfo&titles=File:%s&iiprop=url|mime' % (api_url, image.encode('ascii', 'replace'))
+                    image_info_json = urllib2.urlopen(image_query).read()
+                    image_info_pages = json.loads(image_info_json)['query']['pages']
+                    if '-1' in image_info_pages:
+                        image_info = image_info_pages['-1']
+                        if 'imageinfo' in image_info:
+                            image_url = image_info['imageinfo'][0]['url']
+                            print image_url
+                            image_type = image_info['imageinfo'][0]['mime']
+                            req = urllib2.Request(image_url, headers={'User-Agent': sys.argv[0]}) 
+                            image_data = urllib2.urlopen(req).read()
+                            db.put_attachment(recipe_doc, image_data, image, image_type)
+    except Exception:
+        print sys.exc_info()
 
 def main():
     try:
         api_url = 'http://en.wikibooks.org/w/api.php'
         my_db = couch_connect()
-        list_recipes(my_db, api_url)
-        fetch_recipes(my_db, api_url)
+        fetch_images(my_db, api_url)
+        #list_recipes(my_db, api_url)
+        #fetch_recipes(my_db, api_url)
+        sys.exit(0)
     except Exception:
         pass   
         
