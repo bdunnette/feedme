@@ -1,5 +1,8 @@
-from simplemediawiki import MediaWiki
+#!/usr/bin/python
+
 from couchdb.client import Server
+import urllib2
+import json
 import uuid
 import sys
 
@@ -16,7 +19,6 @@ def save_recipe(db, recipe_doc):
         recipe_doc['source'] = 'http://en.wikibooks.org/wiki/%s' % recipe_doc['title'].encode('ascii', 'replace')
         recipe_uuid = uuid.uuid5(uuid.NAMESPACE_URL, recipe_doc['source']).hex
         doc_exists = db.get(recipe_uuid)
-        #print doc_exists, recipe_doc
         if not doc_exists:
             recipe_doc['type'] = 'recipe'
             recipe_doc['_id'] = recipe_uuid
@@ -26,19 +28,21 @@ def save_recipe(db, recipe_doc):
         else:
             print "Recipe %s already in database, skipping..." % recipe_doc['title']     
 
-def list_recipes(db, wiki):
+def list_recipes(db, api_url):
     try:
-        recipes = wiki.call({'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Recipes', 'cmlimit': 'max'})
-        #print recipes
+        recipe_query = '%s?format=json&action=query&list=categorymembers&cmtitle=Category:Recipes&cmlimit=max' % api_url
+        recipes_json = urllib2.urlopen(recipe_query).read()
+        recipes = json.loads(recipes_json)
         cmcontinue = recipes['query-continue']['categorymembers']['cmcontinue']
+        print cmcontinue
         for recipe in recipes['query']['categorymembers']:
             recipe_doc = recipe
-            #print recipe_doc
             save_recipe(db, recipe_doc)
             
         while cmcontinue:
-            recipes = wiki.call({'action': 'query', 'list': 'categorymembers', 'cmtitle': 'Category:Recipes', 'cmlimit': 'max', 'cmcontinue': cmcontinue})
-            #print recipes
+            recipe_query = '%s?format=json&action=query&list=categorymembers&cmtitle=Category:Recipes&cmlimit=max&cmcontinue=%s' % (api_url, cmcontinue)
+            recipes_json = urllib2.urlopen(recipe_query).read()
+            recipes = json.loads(recipes_json)
             if 'query-continue' in recipes:
                 cmcontinue = recipes['query-continue']['categorymembers']['cmcontinue']
             else:
@@ -50,16 +54,16 @@ def list_recipes(db, wiki):
     except Exception:
         print "Unexpected error:", sys.exc_info()[0]
         print sys.exc_info()
-        #print recipes
         
 
-def fetch_recipes(db, wiki):
+def fetch_recipes(db, api_url):
     try:
         recipes_without_content = db.view('feedme/recipes_without_text')
         for recipe in recipes_without_content:
             recipe_doc = recipe.value
-            print recipe_doc
-            recipe_content = wiki.call({'action': 'parse', 'pageid': recipe_doc['pageid']})['parse']
+            recipe_query = '%s?action=parse&format=json&pageid=%s' % (api_url, recipe_doc['pageid'])
+            recipe_json = urllib2.urlopen(recipe_query).read()
+            recipe_content = json.loads(recipe_json)['parse']
             for key in recipe_content:
                 recipe_doc[key] = recipe_content[key]
             print recipe_doc
@@ -69,10 +73,10 @@ def fetch_recipes(db, wiki):
 
 def main():
     try:
-        wiki = MediaWiki('http://en.wikibooks.org/w/api.php')
+        api_url = 'http://en.wikibooks.org/w/api.php'
         my_db = couch_connect()
-        list_recipes(my_db, wiki)
-        fetch_recipes(my_db, wiki)
+        list_recipes(my_db, api_url)
+        fetch_recipes(my_db, api_url)
     except Exception:
         pass   
         
